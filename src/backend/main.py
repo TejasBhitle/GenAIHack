@@ -1,5 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException, Depends, Form, BackgroundTasks
-from pymodels import ProjectResponse, ChatResponse
+from pymodels import ProjectResponse, ChatResponse, SimpleResponse
 from llm_utils import handle_project_init, handle_question
 from typing import List
 import dao
@@ -94,6 +94,18 @@ async def get_chat_history(project_id: int, db: dao.SessionLocal = Depends(dao.g
         for chat in dao.get_all_chats(project_id, db)
     ]
 
+
+@app.get("/projects/{project_id}/delete", response_model=SimpleResponse)
+async def project_delete(project_id: int, db: dao.SessionLocal = Depends(dao.get_db)):
+    for chat in dao.get_all_chats(project_id, db):
+        dao.chat_delete(chat.id, db)
+    dao.project_delete(project_id, db)
+    return SimpleResponse(msg=f"Project {project_id} deleted successfully")
+
+@app.get("/chats/{chat_id}/delete", response_model=SimpleResponse)
+async def chat_delete(chat_id: int, db: dao.SessionLocal = Depends(dao.get_db)):
+    dao.chat_delete(chat_id, db)
+    return SimpleResponse(msg=f"Chat {chat_id} deleted successfully")
 
 @app.get("/")
 async def root():

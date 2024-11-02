@@ -13,3 +13,6 @@ class ChatResponse(BaseModel):
     question: str
     answer: str
     project_id: int
+
+class SimpleResponse(BaseModel):
+    msg: str

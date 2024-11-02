@@ -59,13 +59,20 @@ def get_project(project_id: int, db: SessionLocal):
 def update_project_status(project_id: int, is_ready: Boolean, db: SessionLocal):
     project = db.query(Project).filter(Project.id == project_id).first()
     if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
+        raise Exception("Project not found")
     
     project.is_ready = is_ready
     db.commit()
     db.refresh(project)
     return project
 
+def project_delete(project_id: int, db: SessionLocal):
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        raise Exception("Project not found")
+    
+    db.delete(project)
+    db.commit()
 
 def chat_create(question: str, answer: str, project_id: int, db: SessionLocal):
 
@@ -83,13 +90,20 @@ def get_all_chats(project_id: int, db: SessionLocal):
 def update_chat_answer(chat_id: int, new_answer: str, db: SessionLocal):
     chat = db.query(Chat).filter(Chat.id == chat_id).first()
     if not chat:
-        raise HTTPException(status_code=404, detail="Chat not found")
+        raise Exception("Chat not found")
     
     chat.answer = new_answer
     db.commit()
     db.refresh(chat)
     return chat
 
+def chat_delete(chat_id: int, db: SessionLocal):
+    chat = db.query(Chat).filter(Chat.id == chat_id).first()
+    if not chat:
+        raise Exception("Chat not found")
+    
+    db.delete(chat)
+    db.commit()
 
 # Models
 class Project(Base):
